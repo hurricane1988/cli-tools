@@ -14,8 +14,10 @@
 //
 
 use prettytable::{Table, Row, Cell, row};
+use sysinfo::{Uid, User, Users};
+use crate::user;
 
-// 打印当前主机的所有用户
+/// 打印当前主机的所有用户
 pub fn list_users() {
     // 创建table
     let mut table = Table::new();

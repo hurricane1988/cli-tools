@@ -1,1 +1,1 @@
-pub mod memory_info;
+pub mod mem_info;
