@@ -12,3 +12,4 @@ os = "0.1.0"
 prettytable-rs = "0.10.0"
 psutil = "3.3.0"
 sysinfo = "0.30.10"
+serde = { version = "1.0.197", features = ["derive"] }

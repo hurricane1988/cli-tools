@@ -117,6 +117,7 @@ dependencies = [
  "os",
  "prettytable-rs",
  "psutil",
+ "serde",
  "sysinfo",
 ]
 
