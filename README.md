@@ -1,5 +1,26 @@
 ## A command tool get system information
+- [ ] [Help]
+```shell
+./cli-tools --help
+```
+```shell
+A terminal cli tool to get system information base on selected option
+
+Usage: cli-tools [COMMAND]
+
+Commands:
+  cpu   Print the cpu usage information.
+  user  Print the user information.
+  help  Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
+```
 - [ ] [User information]
+```shell
+./cli-tools user -u 1
+```
 ```shell
 +-------+--------------+-----+-----+-------+
 | INDEX |     USER     | UID | GID | LOGIN |
