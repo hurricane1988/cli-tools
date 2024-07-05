@@ -13,3 +13,4 @@ prettytable-rs = "0.10.0"
 psutil = "3.3.0"
 sysinfo = "0.30.10"
 serde = { version = "1.0.197", features = ["derive"] }
+netstat2 = "0.9.1"
