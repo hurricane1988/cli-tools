@@ -48,7 +48,7 @@ use crate::socket::tcp_socket::{get_tcp_by_state, get_tcp_socket};
 fn main() {
 
     // get_tcp_socket();
-    get_tcp_by_state("Listen");
+    get_tcp_by_state("established");
 
     let matches = Command::new("cli-tool")
         .version("v1.0.0")
