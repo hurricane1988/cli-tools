@@ -30,10 +30,10 @@ pub fn list_users() {
     // 增加header头
     table.add_row(row![Fgbc =>"INDEX", "USER", "UID", "GID", "LOGIN"]);
 
-    // 获取系统中所有用户的信息
+    /// 获取系统中所有用户的信息
     let users = sysinfo::Users::new_with_refreshed_list();
 
-    // 遍历用户列表，为每个用户添加一行到表格中
+    /// 遍历用户列表，为每个用户添加一行到表格中
     for (index, user) in users.iter().enumerate() {
         table.add_row(Row::new(vec![
             Cell::new(&index.to_string()), // 用户索引
@@ -42,7 +42,7 @@ pub fn list_users() {
             Cell::new(&user.group_id().to_string()), // 用户组ID
         ]));
     }
-    // 在标准输出中打印表格
-    // Print the table to stdout
+    /// 在标准输出中打印表格
+    /// Print the table to stdout
     table.printstd()
 }
