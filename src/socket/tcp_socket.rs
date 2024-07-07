@@ -13,6 +13,8 @@
 // limitations under the License.
 //
 
+use std::collections::HashMap;
+use std::fmt::format;
 use std::str::FromStr;
 use netstat2::{get_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo, TcpState};
 use prettytable::{Table, Row, Cell, row};
@@ -186,8 +188,165 @@ fn tcp_state_table(state: TcpStateFilter) {
     table.printstd();
 }
 
-
 pub fn get_tcp_by_state(state: &str) {
     let tcp_state = TcpStateFilter::from_str(&state).unwrap();
     tcp_state_table(tcp_state)
+}
+
+pub fn tcp_state_order_table() {
+    // Define the address family and protocol flags
+    let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
+    let proto_flags = ProtocolFlags::TCP;
+
+    // Get the socket information
+    let sockets_info = get_sockets_info(af_flags, proto_flags).expect("Failed to get socket info");
+
+    // Create a HashMap to store the count of each socket state
+    let mut socket_counts = std::collections::HashMap::new();
+
+    // Iterate over the socket information and count the states
+    for info in sockets_info {
+        let state = match info.protocol_socket_info {
+            netstat2::ProtocolSocketInfo::Tcp(tcp_info) => format!("{:?}", tcp_info.state),
+            netstat2::ProtocolSocketInfo::Udp(_) => "UDP".to_string(),
+        };
+
+        *socket_counts.entry(state).or_insert(0) += 1;
+    }
+    // Convert the HashMap to a Vec and sort it by the count
+    let mut socket_counts_vec: Vec<_> = socket_counts.into_iter().collect();
+    socket_counts_vec.sort_by(|a, b| b.1.cmp(&a.1));
+
+    // 初始化表格用于显示结果
+    let mut table = Table::new();
+    // 设置表格的标题行
+    table.add_row(row![Fgbc =>"Index","State","Count"]);
+
+    for (index, (state, count)) in socket_counts_vec.iter().enumerate() {
+        table.add_row(row![index, state, count]);
+    }
+
+    // Print the table
+    table.printstd();
+}
+
+pub fn remote_addr_order_table() {
+    /// Define the address family and protocol flags
+    let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
+    let proto_flags = ProtocolFlags::TCP;
+
+    // Get the socket information.
+    let sockets_info = get_sockets_info(af_flags, proto_flags).expect("Failed to get socket info");
+
+    // Create a HashMap to store the count of each remote address.
+    let mut remote_add_counts: HashMap<String, u32> = HashMap::new();
+
+    // Iterate over the socket information and count  remote addresses.
+    for info in sockets_info {
+        match info.protocol_socket_info {
+            ProtocolSocketInfo::Tcp(tcp_info) => {
+                /// Count the remote address
+                let remote_addr_str = format!("{}", tcp_info.remote_addr);
+                *remote_add_counts.entry(remote_addr_str).or_insert(0) +=1;
+            }
+            ProtocolSocketInfo::Udp(_) => {
+                /// udp has not remote_addr
+                return;
+            },
+        }
+    }
+
+    // Convert the HashMaps to Vecs and sort them by the count.
+    let mut remote_addr_counts_vec: Vec<_> = remote_add_counts.into_iter().collect();
+    remote_addr_counts_vec.sort_by(|a, b| b.1.cmp(&a.1));
+
+
+    // Create the table for remote addresses
+    let mut table = Table::new();
+    // 设置表格的标题行
+    table.add_row(row![Fgbc =>"Index","Remote-Addr","Connected-Count"]);
+
+    for (index, (remote_addr, count)) in remote_addr_counts_vec.iter().enumerate() {
+        table.add_row(row![index, remote_addr, count]);
+    };
+    table.printstd();
+}
+
+pub fn local_port_order_table() {
+    /// Define the address family and protocol flags
+    let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
+    let proto_flags = ProtocolFlags::TCP;
+
+    // Get the socket information.
+    let sockets_info = get_sockets_info(af_flags, proto_flags).expect("Failed to get socket info");
+
+    // Create a HashMap to store the count of each remote address.
+    let mut local_port_counts: HashMap<String, u32> = HashMap::new();
+
+    // Iterate over the socket information and count  remote addresses.
+    for info in sockets_info {
+        match info.protocol_socket_info {
+            ProtocolSocketInfo::Tcp(tcp_info) => {
+                /// Count the remote address
+                let local_port_str = format!("{}", tcp_info.local_port);
+                *local_port_counts.entry(local_port_str).or_insert(0) +=1;
+            }
+            ProtocolSocketInfo::Udp(_) => {
+            },
+        }
+    }
+
+    // Convert the HashMaps to Vecs and sort them by the count.
+    let mut local_port_counts_vec: Vec<_> = local_port_counts.into_iter().collect();
+    local_port_counts_vec.sort_by(|a, b| b.1.cmp(&a.1));
+
+
+    // Create the table for remote addresses
+    let mut table = Table::new();
+    // 设置表格的标题行
+    table.add_row(row![Fgbc =>"Index","Local-Port","Connected-Count"]);
+
+    for (index, (local_port, count)) in local_port_counts_vec.iter().enumerate() {
+        table.add_row(row![index, local_port, count]);
+    };
+    table.printstd();
+}
+
+pub fn remote_addr_port_order_table() {
+    /// Define the address family and protocol flags
+    let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
+    let proto_flags = ProtocolFlags::TCP;
+
+    // Get the socket information.
+    let sockets_info = get_sockets_info(af_flags, proto_flags).expect("Failed to get socket info");
+
+    // Create a HashMap to store the count of connections per remote address and port
+    let mut remote_addr_port_counts: HashMap<String, u32> = HashMap::new();
+
+    // Iterate over the socket information and count  remote addresses.
+    for info in sockets_info {
+        match info.protocol_socket_info {
+            ProtocolSocketInfo::Tcp(tcp_info) => {
+                // Count the remote address and port
+                let remote_addr_port_str = format!("{}:{}", tcp_info.remote_addr, tcp_info.remote_port);
+                *remote_addr_port_counts.entry(remote_addr_port_str).or_insert(0) += 1;
+            }
+            ProtocolSocketInfo::Udp(_) => {
+            },
+        }
+    }
+
+    let mut remote_addr_port_counts_vec: Vec<_> = remote_addr_port_counts.into_iter().collect();
+    remote_addr_port_counts_vec.sort_by(|a, b| b.1.cmp(&a.1));
+
+
+    // Create the table for remote addresses
+    let mut table = Table::new();
+    // 设置表格的标题行
+    table.add_row(row![Fgbc =>"Index","Remote-Addr-Port","Connected-Count"]);
+
+    for (index, (remote_addr_port, count)) in remote_addr_port_counts_vec.iter().enumerate() {
+        table.add_row(row![index + 1, remote_addr_port, count]);
+    }
+    table.printstd();
 }

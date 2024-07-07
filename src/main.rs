@@ -43,12 +43,17 @@ use crate::network::network_info::{get_networks};
 use crate::network::network_subcommand::{network_sum, subcommand_network_sum};
 use crate::process::process_subcommand::{process_sum, subcommand_process_sum};
 use crate::user::user_subcommand::{subcommand_user_list, user_list};
-use crate::socket::tcp_socket::{get_tcp_by_state, get_tcp_socket};
+use crate::socket::tcp_socket::{get_tcp_by_state, get_tcp_socket, tcp_state_order_table, remote_addr_order_table, local_port_order_table, remote_addr_port_order_table};
 
 fn main() {
 
     // get_tcp_socket();
-    get_tcp_by_state("established");
+    // get_tcp_by_state("established");
+
+    // tcp_state_order_table();
+    // remote_addr_order_table();
+    // local_port_order_table();
+    remote_addr_port_order_table();
 
     let matches = Command::new("cli-tool")
         .version("v1.0.0")
